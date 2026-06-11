@@ -1,28 +1,24 @@
-from django.shortcuts import render
-from myapp.serializers import MenuItemSerializer, CategorySerializer
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from rest_framework import generics
-from myapp.models import MenuItem, Category
-from rest_framework.permissions import(
-    IsAuthenticated, IsAdminUser,  AllowAny
-)
-
+from rest_framework.permissions import IsAuthenticated
+from .models import Category, MenuItem, Cart, Order, OrderItem
+from .serializers import CategorySerializer, MenuItemSerializer
+from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
+from django.shortcuts import  get_object_or_404
+from django.contrib.auth.models import Group, User
+from rest_framework import viewsets
+from rest_framework import status
 # Create your views here.
 
-
-class ProductsListCreateAPIView(generics.ListCreateAPIView):
-    queryset = MenuItem.objects.all()
-    serializer_class = MenuItemSerializer
     
-    def get_permissions(self):
-        self.permission_classes = [AllowAny]
-        if self.request.method == 'POST':
-            self.permission_classes = [IsAdminUser]
-        return super().get_permissions()
-    
-    
-    
-class CategoryListCreateAPIView(generics.ListCreateAPIView):
+#This will create a category input
+class CategoryView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    
+    def get_permissions(self):
+        permission_classes = []
+        if self.request.method == 'POST':
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+        
