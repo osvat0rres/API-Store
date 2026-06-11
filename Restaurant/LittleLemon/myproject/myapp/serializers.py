@@ -1,16 +1,18 @@
 from rest_framework import serializers
-from .models import MenuItem, Category
+from django.contrib.auth.models import User
+from .models import MenuItem, Category, Cart, Order, OrderItem
 
-
-
-
-class MenuItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MenuItem
-        fields = '__all__'
-        
-        
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['id', 'tittle', 'slug']
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all()
+    )
+    
+    class Meta:
+        model = MenuItem
+        fields = ['id', 'name', 'description', 'price', 'category']
+ 
