@@ -1,0 +1,49 @@
+from django.db import models
+from django.contrib.auth.models import User 
+
+# Create your models here.
+
+class Category(models.Model):
+    # the slug field onlyu allows letter, number, undescores and hypens
+    slug = models.SlugField()
+    tittle = models.CharField(max_length = 250, db_index = True)
+
+
+class MenuItem(models.Model):
+    tittle = models.CharField(max_length=250, db_index = True)
+    price = models.DecimalField(max_digits=6, decimal_places=2 , db_index = True)
+    featured = models.BooleanField(db_index = True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+
+
+class Cart(models.Model):
+    
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    menuitem = models.ForeignKey(MenuItem, on_delete = models.CASCADE)
+    quantity = models.SmallIntegerField()
+    unit_price = models.DecimalField(max_digits = 6, decimal_places = 2)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    
+    
+    # The same user cannot have the same menu item in listed multiple times in separate cart row
+    class Meta:
+        unique_together = ('menuitem', 'user')
+        
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    delivery_crew = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'delivery_crew', null= True)
+    status = models.BooleanField(db_index = True, default = 0)
+    total = models.DecimalField(max_digits=6, decimal_places=2)
+    date = models.DateField()
+    
+class OrderItem(models.Model):
+    order = models.ForeignKey(User, on_delete = models.CASCADE)
+    menuitem = models.ForeignKey(MenuItem, on_delete = models.CASCADE)
+    quantity = models.SmallIntegerField()
+    unit_price = models.DecimalField(max_digits=6, decimal_places = 2)
+    price = models.DecimalField(max_digits = 6, decimal_places = 2)
+    
+    class Meta:
+        unique_together = ('order', 'menuitem')
+    
+    
