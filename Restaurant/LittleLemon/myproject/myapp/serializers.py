@@ -22,10 +22,10 @@ class CartSerializer(serializers.ModelSerializer):
         default = serializers.CurrentUserDefault()
     )
     
-    def validate(self,atts):
-        atts['price'] = atts['quantiry'] * atts['unit_pice']
-        
-        
+    def validate(self,attrs):
+        attrs['price'] = attrs['quantity'] * attrs['unit_price']
+        return attrs
+
     class Meta:
         model = Cart
         fields = ['user', "menuitem", "quantity", "price",'unit_price']
@@ -44,7 +44,7 @@ class OrderSerializers(serializers.ModelSerializer):
     
     class Meta:
         model = Order
-        fields = ['id', 'user', 'delivery_crew', 'status','date','total', 'Orderitem']
+        fields = ['id', 'user', 'delivery_crew', 'status','date','total', 'OrderItems']
         
         
 class UserSericalizer(serializers.ModelSerializer):
